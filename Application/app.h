@@ -7,5 +7,6 @@
 #include "../Server/server.h"
 
 void appStart(void);
+void appStartTest(void);
 
 #endif //APP_H
