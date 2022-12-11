@@ -54,6 +54,7 @@ EN_serverError_t isBlockedAccount(ST_accountsDB_t *accountRefrence);
 EN_serverError_t isAmountAvailable(ST_terminalData_t *termData, ST_accountsDB_t *accountRefrence);
 EN_serverError_t saveTransaction(ST_transaction_t *transData);
 void listSavedTransactions(void);
+void recieveTransactionDataTest(void);
 void isValidAccountTest(void);
 void isBlockedAccountTest(void);
 void isAmountAvailableTest(void);

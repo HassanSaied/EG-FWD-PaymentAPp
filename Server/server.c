@@ -82,6 +82,7 @@ EN_transState_t recieveTransactionData(ST_transaction_t *transData)
     }
     if(transData ->transState == APPROVED){
         userAccount->balance -= transData->terminalData.transAmount;
+        fprintf(myOutStream,"Remaining User Balance %lf\n",userAccount->balance);
         transData->transState = saveTransaction(transData);
         uppdateAccountsDB(serverAccountsDB, serverNumSavedAccounts);
     }else{
@@ -178,6 +179,29 @@ void listSavedTransactions(void)
     }
 }
 
+void recieveTransactionDataTest(void){
+    ST_cardData_t firstCardData = {.primaryAccountNumber = "8989374615436851"};
+    ST_terminalData_t terminalData = {.transAmount = 1500};
+    ST_transaction_t firstCaseTransaction = {.cardHolderData = firstCardData,.terminalData = terminalData};
+    ST_cardData_t secondCardData = {.primaryAccountNumber = "5807007076043875"};
+    ST_transaction_t thirdCaseTransaction = {.cardHolderData = secondCardData,.terminalData = terminalData};
+    ST_cardData_t thirdCardData = {.primaryAccountNumber = "4201588522241432"};
+    ST_transaction_t fourthCaseTransaction = {.cardHolderData = thirdCardData,.terminalData = terminalData};
+    ST_transaction_t * firstData = &firstCaseTransaction;
+    ST_transaction_t * thirdData = &thirdCaseTransaction;
+    ST_transaction_t * fourthData = &fourthCaseTransaction;
+    ST_testCase_t testCases[] = {
+        {.testCaseName = "Pass", .inputData = "Valid account, enough balance",.inputParams = &firstData,.expectedResult = APPROVED},
+        {.testCaseName = "Fail", .inputData = "Valid account, Not enough balance",.inputParams = &firstData,.expectedResult = DECLINED_INSUFFECIENT_FUND},
+        {.testCaseName = "Fail", .inputData = "Blocked Account",.inputParams = &thirdData,.expectedResult = DECLINED_STOLEN_CARD},
+        {.testCaseName = "Fail", .inputData = "Invalid Account",.inputParams = &fourthData,.expectedResult = FRAUD_CARD},
+    };
+    runTestCasesNumParams(testCases,4,"recieveTransactionData",recieveTransactionData,1);
+    
+
+    
+}
+
 void isValidAccountTest(void)
 {
     ST_cardData_t firstCardData = {
@@ -218,7 +242,7 @@ void isBlockedAccountTest(void)
 void isAmountAvailableTest(void)
 {
     ST_cardData_t firstCardData = {
-        .primaryAccountNumber = "8989374615436851",
+        .primaryAccountNumber = "7356286777482761",
     };
     ST_cardData_t secondCardData = {
         .primaryAccountNumber = "4031147774727170",
@@ -231,7 +255,7 @@ void isAmountAvailableTest(void)
     void * secondCase[] = {&terminalData,secondAccountReference};
 
     ST_testCase_t testCases[] = {
-        {.testCaseName = "Pass, Amount Valid", .inputData = "2000 Balance, 1500 Trasfer", .inputParams = firstCase, .expectedResult = SERVER_OK},
+        {.testCaseName = "Pass, Amount Valid", .inputData = "3750 Balance, 1500 Trasfer", .inputParams = firstCase, .expectedResult = SERVER_OK},
         {.testCaseName = "Fail, Exceed Amount", .inputData = "1230 Balance, 1500 Transfer", .inputParams = secondCase, .expectedResult = LOW_BALANCE}};
     runTestCasesNumParams(testCases, sizeof(testCases) / sizeof(ST_testCase_t), "isAmountAvailable", isAmountAvailable, 2);
 }
@@ -284,9 +308,37 @@ Card Expiration Date: 10/26\n\
 #########################\n",myOutStream);
     fputs("Actual Result \n",myOutStream);
     saveTransaction(&transaction2);
+    fputs("====================================================\n",myOutStream);
 }
 
 void listSavedTransactionsTest(void)
 {
-    saveTransactionTest();
+    fputs("Tester Name: Hassan Saied\n",myOutStream);
+    fprintf(myOutStream,"Function Name: %s\n","listSavedTransactions");
+    fputs("Test Case 1\n",myOutStream);
+    fputs("Expected Result \n",myOutStream);
+    fputs("#########################\n\
+Transaction Sequence Number: 0\n\
+Transaction Date: 12/10/2022\n\
+Transaction Amount: 500.000000\n\
+Transaction State: Approved\n\
+Terminal Max Amount: 10000.000000\n\
+Cardholder Name: Hassan Saied Hassan Ma\n\
+PAN: 8989374615436851\n\
+Card Expiration Date: 10/26\n\
+#########################\n\
+#########################\n\
+Transaction Sequence Number: 1\n\
+Transaction Date: 12/10/2022\n\
+Transaction Amount: 500.000000\n\
+Transaction State: Insuffecient Funds\n\
+Terminal Max Amount: 10000.000000\n\
+Cardholder Name: Hassan Saied Hassan Ma\n\
+PAN: 8989374615436851\n\
+Card Expiration Date: 10/26\n\
+#########################\n",myOutStream);
+    fputs("Actual Result \n",myOutStream);
+    listSavedTransactions();
+    fputs("====================================================\n",myOutStream);
+
 }

@@ -5,7 +5,8 @@
 
 int main(int argc, char ** argv){
     initStreams();
-    fputs("Hello Wolrd!\n",myOutStream);
+    remove("Accounts  DB.txt");
+    remove("Transactions DB.txt");
     
     // getCardHolderNameTest();
     // getCardExpiryDateTest();
@@ -18,13 +19,14 @@ int main(int argc, char ** argv){
     // setMaxAmountTest();
     // isValidCardPANTest();
 
-    // isValidAccountTest();
-    // isBlockedAccountTest();
-    // isAmountAvailableTest();
-    // saveTransactionTest();
-    // listSavedTransactionsTest();
+    isValidAccountTest();
+    recieveTransactionDataTest();
+    isBlockedAccountTest();
+    isAmountAvailableTest();
+    saveTransactionTest();
+    listSavedTransactionsTest();
 
-    appStartTest();
+    // appStartTest();
 
     return 0;
 }
